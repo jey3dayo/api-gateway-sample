@@ -12,10 +12,10 @@
     "deploy:staging": "export NODE_ENV=staging && yarn deploy:env",
     "serve": "sls offline -P 4000",
     "serve:watch": "nodemon -e js,ts,jsx,tsx -x yarn serve",
-    "tail:dev": "sls logs --function notifyEvent --tail",
+    "tail:dev": "sls logs --function notifyTest --tail",
     "test:watch": "jest --watch",
     "build": "sls webpack",
-    "watch:dev": "sls invoke local --watch --function notifyEvent"
+    "watch:dev": "sls invoke local --watch --function notifyTest"
   },
   "repository": {
     "type": "git",
@@ -58,6 +58,7 @@
     "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {
+    "aws-sdk": "^2.1008.0",
     "deepmerge": "^4.2.2",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.33",
