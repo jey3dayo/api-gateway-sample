@@ -1,0 +1,93 @@
+service: caproni-sample
+
+frameworkVersion: '2'
+
+plugins:
+  - serverless-webpack
+  - serverless-offline
+  - '@unly/serverless-env-copy-plugin'
+  - serverless-layers
+  - serverless-plugin-warmup
+  - serverless-plugin-resource-tagging
+  - serverless-tag-api-gateway
+  - serverless-dotenv-plugin
+  - serverless-prune-plugin
+
+package:
+  individually: true
+
+provider:
+  name: aws
+  apiName: 'caproni-sample'
+  profile: default
+  stage:  ${opt:stage, 'development'}
+  runtime: nodejs12.x
+  region: ap-northeast-1
+  vpc:
+    securityGroupIds:
+      - sg-0758e3352c29d606a
+    subnetIds:
+      - subnet-a639e1ff
+      - subnet-169d1c61
+  deploymentBucket:
+    name: ${self:custom.deploymentBucket}
+  apiGateway:
+    minimumCompressionSize: 1024
+  timeout: 300
+  logRetentionInDays: 30
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:*
+      Resource: 'arn:aws:s3:::caproni/*'
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+      Resource: '*'
+    - Effect: Allow
+      Action:
+        - ec2:CreateNetworkInterface
+        - ec2:DescribeNetworkInterfaces
+        - ec2:DetachNetworkInterface
+        - ec2:DeleteNetworkInterface
+      Resource: '*'
+  stackTags:
+    Department: ${self:provider.environment.app}
+    CAAD-Cost: ${self:provider.environment.app}
+  environment:
+    app: caproni-sample
+    deploymentBucket: caproni
+
+custom:
+  stage:  ${self:provider.apiName, opt:stage, self:provider.stage}
+  deploymentBucket: ${self:provider.environment.deploymentBucket}
+  serverless-layers:
+    layersDeploymentBucket: ${self:custom.deploymentBucket}
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: false
+    packager: yarn
+  warmup:
+    enabled: true
+    events:
+      - schedule: rate(5 minutes)
+    prewarm: true
+    concurrency: 1
+  prune:
+    automatic: true
+    number: 5
+  apiGatewayTags: ${self:provider.stackTags}
+
+functions:
+  hello:
+    handler: src/hello.default
+    events:
+      - http:
+          path: hello
+          method: get
+  notifyTest:
+    handler: src/notifyTest.default
+    events:
+      - http:
+          path: notifyTest
+          method: get
