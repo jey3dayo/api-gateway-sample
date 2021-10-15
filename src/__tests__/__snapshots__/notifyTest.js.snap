@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`hello executes as expected 1`] = `
+Object {
+  "body": "{\\"message\\":{\\"NODE_ENV\\":\\"development\\"}}",
+  "statusCode": 200,
+}
+`;
+
+exports[`hello executes as expected include params 1`] = `
+Object {
+  "body": "{\\"message\\":{\\"NODE_ENV\\":\\"development\\",\\"query\\":{\\"test\\":\\"example\\"}}}",
+  "statusCode": 200,
+}
+`;
